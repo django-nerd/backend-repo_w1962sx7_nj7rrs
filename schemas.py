@@ -11,38 +11,60 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
+# CRM-focused schemas for the freelancing agency
 
-class User(BaseModel):
+class Lead(BaseModel):
     """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
+    Leads captured from the website contact form
+    Collection name: "lead"
     """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    name: str = Field(..., description="Full name of the prospect")
+    email: EmailStr = Field(..., description="Contact email")
+    company: Optional[str] = Field(None, description="Company or organization")
+    phone: Optional[str] = Field(None, description="Phone number")
+    budget: Optional[str] = Field(None, description="Estimated budget range")
+    timeline: Optional[str] = Field(None, description="Desired timeline")
+    service: Optional[str] = Field(None, description="Service interested in")
+    message: Optional[str] = Field(None, description="Project description or message")
+    source: str = Field("website", description="Lead source identifier")
+    status: str = Field("new", description="Lead status: new, contacted, qualified, proposal, won, lost")
 
-class Product(BaseModel):
+class Project(BaseModel):
     """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
+    Portfolio projects shown on the website
+    Collection name: "project"
     """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
+    title: str
+    description: str
+    tags: List[str] = []
+    url: Optional[str] = None
+    image: Optional[str] = None
+    highlight: bool = False
 
-# Add your own schemas here:
-# --------------------------------------------------
+class Testimonial(BaseModel):
+    """
+    Client testimonials
+    Collection name: "testimonial"
+    """
+    name: str
+    role: Optional[str] = None
+    quote: str
+    avatar: Optional[str] = None
+
+class Service(BaseModel):
+    """
+    Services offered
+    Collection name: "service"
+    """
+    name: str
+    description: str
+    icon: Optional[str] = None
 
 # Note: The Flames database viewer will automatically:
 # 1. Read these schemas from GET /schema endpoint
 # 2. Use them for document validation when creating/editing
 # 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# 4. You don't need to create any database endpoints!  
